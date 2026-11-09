@@ -1,5 +1,3 @@
-# Satu-Langkah
-
 # Satu Langkah
 
 Satu Langkah is a calm, teacher-led vocabulary practice prototype for autistic pupils. It helps a pupil work through one short, visual learning mission at a time: take or choose a photo of an object, hear a teacher-approved word, and complete a simple matching activity. The pupil can ask for help, repeat the word, take a break, or stop at any point.
