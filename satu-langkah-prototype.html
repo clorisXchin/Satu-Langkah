@@ -1,0 +1,730 @@
+<!doctype html>
+<html lang="ms" data-theme="auto">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Satu Langkah</title>
+<style>
+:root{
+  --bg:#f4f7f7;--surface:#ffffff;--surface2:#eaf2f3;--text:#1f2f33;--muted:#4d6368;--border:#c5d6d9;
+  --primary:#245C68;--primary-h:#1b4a54;--on-primary:#ffffff;--soft:#dcebed;--grey:#e8eded;--amber:#fbeccb;--rose:#f7e1df;
+  --err:#a12a2a;--err-bg:#fbeaea;--ok:#1f6b4f;--focus:#0b3d91;--tile:#ffffff;--rw1:#e6f1f2;--rw2:#cfe3ea;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#1d272a;--surface:#27353a;--surface2:#2f4046;--text:#dde8ea;--muted:#a9bec3;--border:#44585e;
+    --primary:#2f7a88;--primary-h:#3a8b9a;--soft:#2f4a50;--grey:#34454a;--amber:#4a4331;--rose:#4a3638;
+    --err:#ff9d9d;--err-bg:#4a2c2e;--ok:#8fd4b5;--focus:#9ecbff;--tile:#eef5f6;--rw1:#2c4248;--rw2:#243a44;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1d272a;--surface:#27353a;--surface2:#2f4046;--text:#dde8ea;--muted:#a9bec3;--border:#44585e;
+  --primary:#2f7a88;--primary-h:#3a8b9a;--soft:#2f4a50;--grey:#34454a;--amber:#4a4331;--rose:#4a3638;
+  --err:#ff9d9d;--err-bg:#4a2c2e;--ok:#8fd4b5;--focus:#9ecbff;--tile:#eef5f6;--rw1:#2c4248;--rw2:#243a44;
+}
+*{box-sizing:border-box}
+html{font-size:100%}html.size115{font-size:115%}html.size130{font-size:130%}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;line-height:1.55;font-size:1rem}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:4px solid var(--focus);outline-offset:3px;border-radius:8px}
+.skip{position:absolute;left:-999px;top:8px;background:var(--surface);padding:12px 16px;border:2px solid var(--focus);z-index:100}
+.skip:focus{left:8px}
+/* ---- Header (fixed position, same on every view) ---- */
+header.top{position:sticky;top:0;z-index:20;background:var(--surface);border-bottom:2px solid var(--border)}
+.top-in{max-width:1080px;margin:0 auto;padding:8px 24px;display:flex;flex-wrap:wrap;gap:8px 20px;align-items:center;justify-content:space-between}
+.brand{display:flex;align-items:center;gap:12px;background:none;border:0;cursor:pointer;min-height:52px;padding:2px 6px;text-align:left;border-radius:12px}
+.brand .mark{background:var(--tile);border-radius:12px;padding:3px 5px;display:flex}
+.brand b{display:block;font-size:1.35rem;line-height:1.15}
+.brand small{display:block;color:var(--muted);font-size:.82rem}
+.top-r{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.top-r ul{list-style:none;margin:0;padding:0;display:flex;gap:8px}
+.navbtn{min-height:46px;padding:8px 16px;border-radius:12px;border:2px solid var(--border);background:var(--surface);cursor:pointer;font-weight:600;display:inline-flex;align-items:center;gap:8px}
+.navbtn[aria-current="page"]{background:var(--primary);color:var(--on-primary);border-color:var(--primary)}
+.navbtn:hover:not([aria-current="page"]){background:var(--surface2)}
+.badge{font-size:.7rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:#fbeccb;color:#3d3320;border-radius:999px;padding:1px 8px}
+/* language switch (light-switch style) */
+.langsw{display:inline-flex;align-items:center;gap:10px;min-height:46px;padding:6px 14px;border:2px solid var(--border);border-radius:999px;background:var(--surface);cursor:pointer;font-weight:700;font-size:.95rem}
+.langsw .lg{color:var(--muted);font-weight:600}
+.langsw[aria-checked="false"] .l-bm,.langsw[aria-checked="true"] .l-en{color:var(--text);font-weight:800}
+.track{position:relative;width:50px;height:28px;border-radius:999px;background:var(--primary);flex:none}
+.thumb{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:transform .15s}
+.langsw[aria-checked="true"] .thumb{transform:translateX(22px)}
+/* ---- Page ---- */
+main{max-width:1080px;margin:0 auto;padding:28px 24px 56px;min-height:70vh}
+main.has-ctl{padding-bottom:160px}
+h1{font-size:2rem;line-height:1.2;margin:4px 0 6px}
+h1:focus{outline:none}
+h2{font-size:1.2rem;margin:0 0 10px}
+.sub{color:var(--muted);margin:0 0 20px;font-size:1.1rem}
+.small{font-size:.9rem;color:var(--muted)}
+.card{background:var(--surface);border:2px solid var(--border);border-radius:22px;padding:26px}
+.two{display:grid;gap:30px;grid-template-columns:1fr;align-items:center}
+@media(min-width:880px){.two{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+.tabs{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:0 0 22px;padding-bottom:16px;border-bottom:2px dashed var(--border)}
+/* buttons */
+.btn{min-height:52px;min-width:52px;padding:10px 22px;border-radius:14px;border:2px solid transparent;font-weight:700;cursor:pointer;background:var(--grey);transition:background-color .15s;font-size:1rem}
+.btn.primary{background:var(--primary);color:var(--on-primary)}
+.btn.primary:hover{background:var(--primary-h)}
+.btn.outline{background:var(--surface);border-color:var(--primary)}
+.btn.outline:hover{background:var(--soft)}
+.btn.big{min-height:60px;font-size:1.15rem;padding:12px 30px}
+.btn.sm{min-height:44px;padding:8px 14px;font-size:.95rem}
+.btn[disabled]{opacity:.55;cursor:not-allowed}
+.row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+/* Now / Next / Done */
+ol.steps{list-style:none;margin:0 0 24px;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+ol.steps li{min-height:46px;display:flex;align-items:center;justify-content:center;border-radius:12px;background:var(--grey);color:var(--muted);font-weight:700;letter-spacing:.04em;text-transform:uppercase;font-size:.85rem;padding:6px;text-align:center}
+ol.steps li.past{background:var(--soft);color:var(--text)}
+ol.steps li[aria-current="step"]{background:var(--primary);color:var(--on-primary)}
+/* Photos: fixed 4:3 so nothing shifts */
+.frame{position:relative;width:100%;max-width:500px;aspect-ratio:4/3;border-radius:18px;background:var(--surface2);border:2px solid var(--border);overflow:hidden;margin:0 auto}
+.frame>*{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.frame.blur>*{filter:blur(9px)}
+.empty{display:flex;align-items:center;justify-content:center;text-align:center;padding:18px;color:var(--muted)}
+.th{display:block;width:100%;aspect-ratio:4/3;border-radius:10px;overflow:hidden;background:var(--surface2);flex:none}
+.th>*{width:100%;height:100%;object-fit:cover;display:block}
+.th.sm{width:68px;border-radius:8px}
+.th.blur>*{filter:blur(4px)}
+.samples{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:6px 0 18px}
+.sbtn{border-radius:14px;border:2px solid var(--border);background:var(--surface);cursor:pointer;display:flex;flex-direction:column;align-items:stretch;gap:6px;padding:6px;font-weight:600;font-size:.95rem;min-height:44px}
+.sbtn[aria-pressed="true"]{border-color:var(--primary);background:var(--soft);box-shadow:inset 0 0 0 2px var(--primary)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
+.wcard{border-radius:18px;border:2px solid var(--border);background:var(--surface);cursor:pointer;display:flex;flex-direction:column;align-items:stretch;gap:8px;padding:8px 8px 12px;font-weight:700;font-size:1.2rem;text-align:center}
+.wcard:hover{background:var(--soft)}
+.wcard.textonly{min-height:84px;justify-content:center;font-size:1.5rem;padding:12px}
+.wcard.hint{border-style:dashed;border-width:4px;border-color:var(--primary)}
+.wcard .lbl{font-weight:400;font-size:.85rem;color:var(--muted)}
+/* pupil control bar (fixed, always visible) */
+footer#controls{position:fixed;left:0;right:0;bottom:0;z-index:20;padding:0 16px 12px;pointer-events:none}
+footer#controls[hidden]{display:none}
+.ctl-wrap{pointer-events:auto;max-width:800px;margin:0 auto;background:var(--surface);border:2px solid var(--border);border-radius:22px;padding:10px 10px 6px}
+.ctl-in{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.ctl-in .btn{min-height:54px;padding:8px 6px;border-radius:999px}
+.c-ulang{background:var(--soft)}.c-bantu{background:var(--grey)}.c-rehat{background:var(--amber)}.c-henti{background:var(--rose)}
+.ctl-note{text-align:center;font-size:.85rem;color:var(--muted);padding:4px 0 2px}
+/* forms */
+.field{margin:0 0 22px}
+label,legend{display:block;font-weight:700;margin-bottom:4px}
+input[type=text],select,textarea{width:100%;min-height:50px;padding:10px 14px;border:2px solid var(--border);border-radius:12px;background:var(--surface)}
+textarea{min-height:100px}
+input[aria-invalid="true"],textarea[aria-invalid="true"],fieldset[aria-invalid="true"]{border-color:var(--err);background:var(--err-bg)}
+.hintt{display:block;font-size:.9rem;color:var(--muted);margin-bottom:6px;font-weight:400}
+.msg{min-height:1.6rem;font-size:.95rem;margin-top:4px;font-weight:600}
+.msg.err{color:var(--err)}.msg.ok{color:var(--ok)}
+fieldset{border:2px solid var(--border);border-radius:16px;padding:16px;margin:0 0 22px}
+.wopts{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.wopt{display:flex;align-items:center;gap:10px;min-height:60px;border:2px solid var(--border);border-radius:14px;padding:8px 12px;cursor:pointer;margin:0;font-weight:600}
+.wopt input{width:26px;height:26px;flex:none}
+.wopt:has(input:checked){background:var(--soft);border-color:var(--primary)}
+ul.pmlist{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+li.pm{display:flex;flex-wrap:wrap;align-items:center;gap:12px;border:2px solid var(--border);border-radius:14px;padding:8px 12px}
+li.pm strong{min-width:90px}
+.errsum{background:var(--err-bg);border:2px solid var(--err);border-radius:14px;padding:12px 16px;margin-bottom:18px}
+.errsum[hidden]{display:none}
+.errsum a{color:inherit;font-weight:700}
+.note{background:var(--soft);border-radius:14px;padding:12px 16px;margin:0 0 18px;font-size:.95rem}
+.status{min-height:1.6rem;font-weight:600;color:var(--primary)}
+.dot{display:inline-flex;width:28px;height:28px;border-radius:50%;align-items:center;justify-content:center;border:2px solid var(--primary);flex:none;font-weight:700}
+.dot.on{background:var(--primary);color:var(--on-primary)}
+.chk{list-style:none;padding:0;margin:0}
+.chk li{display:flex;gap:10px;align-items:center;min-height:44px}
+.list{margin:0;padding-left:1.2em}
+.center{text-align:center}
+/* reward */
+.reward{display:grid;justify-items:center;text-align:center;gap:8px;padding:34px 24px 40px;border-radius:28px;background:linear-gradient(180deg,var(--rw1),var(--rw2));border:2px solid var(--border)}
+.reward h1{font-size:3.2rem;margin:4px 0 0}
+.reward .sub{margin:0 0 14px;font-size:1.2rem}
+.mascot{width:min(230px,60vw);height:auto;animation:pop .5s ease-out both}
+.mascot.s{width:150px}
+@keyframes pop{from{opacity:0;transform:scale(.93)}to{opacity:1;transform:none}}
+/* modal */
+.backdrop{position:fixed;inset:0;background:rgba(15,30,34,.6);display:flex;align-items:center;justify-content:center;padding:16px;z-index:50}
+.modal{background:var(--surface);border:2px solid var(--border);border-radius:22px;max-width:500px;width:100%;padding:26px;max-height:92vh;overflow:auto}
+.modal.calm{background:var(--soft)}
+.modal h2{font-size:1.5rem}
+.modal .row{margin-top:18px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+html.reduce *{transition:none!important;animation:none!important;scroll-behavior:auto!important}
+@media(max-width:620px){h1{font-size:1.65rem}.reward h1{font-size:2.5rem}.ctl-in .btn{font-size:.9rem}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+<defs>
+ <!-- Satu Langkah logo art (from supplied SVG) -->
+ <g id="logo-art" stroke="#245C68" stroke-width="14" stroke-linejoin="round" stroke-linecap="round">
+  <rect x="300" y="133" width="400" height="286" rx="67" fill="#DCEBED"/>
+  <path d="M398 134 L431 82 Q439 68 455 68 L545 68 Q561 68 569 82 L602 134 Z" fill="#84B6A3"/>
+  <circle cx="500" cy="274" r="105" fill="#779DB9"/>
+  <circle cx="500" cy="274" r="75" fill="#DCEBED" stroke="#245C68" stroke-width="10"/>
+  <path d="M449 319 H482 V296 H513 V270 H545" fill="none" stroke="#84B6A3" stroke-width="20"/>
+  <circle cx="552" cy="263" r="11" fill="#245C68" stroke="none"/>
+  <circle cx="647" cy="183" r="15" fill="#84B6A3" stroke="none"/>
+ </g>
+ <!-- Mascot: original gentle turtle, logo palette; shell carries the "step" path from the logo -->
+ <g id="mascot-art" stroke="#245C68" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">
+  <ellipse cx="150" cy="242" rx="108" ry="11" fill="#245C68" opacity=".15" stroke="none"/>
+  <path d="M52 196q-34 4-38 30q28-2 46-18z" fill="#779DB9"/>
+  <rect x="84" y="190" width="46" height="46" rx="20" fill="#6b92b0"/>
+  <rect x="176" y="190" width="46" height="46" rx="20" fill="#6b92b0"/>
+  <rect x="50" y="174" width="226" height="34" rx="17" fill="#DCEBED"/>
+  <path d="M46 186Q46 50 160 50Q274 50 274 186Z" fill="#84B6A3"/>
+  <path d="M106 122l26-24h44l26 24l-26 24h-44z" fill="#a7cfbd" stroke-width="5"/>
+  <path d="M132 98L118 68M176 98L192 68M132 146L116 180M176 146L194 180" fill="none" stroke-width="5"/>
+  <path d="M128 130H150V116H176V106" fill="none" stroke="#DCEBED" stroke-width="9"/>
+  <circle cx="252" cy="158" r="40" fill="#779DB9"/>
+  <circle cx="238" cy="150" r="10" fill="#fff" stroke-width="4"/><circle cx="266" cy="150" r="10" fill="#fff" stroke-width="4"/>
+  <circle cx="240" cy="152" r="4" fill="#245C68" stroke="none"/><circle cx="268" cy="152" r="4" fill="#245C68" stroke="none"/>
+  <path d="M238 174q14 12 28 0" fill="none" stroke-width="5"/>
+  <circle cx="226" cy="168" r="6" fill="#DCEBED" stroke="none"/><circle cx="280" cy="168" r="6" fill="#DCEBED" stroke="none"/>
+ </g>
+ <!-- Photo-style sample scenes (stand-ins until real classroom photos are uploaded) -->
+ <filter id="blur6" x="-30%" y="-60%" width="160%" height="220%"><feGaussianBlur stdDeviation="6"/></filter>
+ <filter id="blur3"><feGaussianBlur stdDeviation="3"/></filter>
+ <filter id="wallb"><feGaussianBlur stdDeviation="9"/></filter>
+ <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.01 0.26" numOctaves="3" seed="7"/><feColorMatrix values="0 0 0 0 0.30 0 0 0 0 0.19 0 0 0 0 0.09 0 0 0 1.1 -0.45"/></filter>
+ <linearGradient id="deskG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfb088"/><stop offset="1" stop-color="#a68257"/></linearGradient>
+ <radialGradient id="vig" cx="50%" cy="48%" r="75%"><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".3"/></radialGradient>
+ <linearGradient id="bookG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4f9b85"/><stop offset="1" stop-color="#2c6858"/></linearGradient>
+ <linearGradient id="sheen" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".32"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/></linearGradient>
+ <linearGradient id="metalG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e9edef"/><stop offset=".5" stop-color="#9aa4aa"/><stop offset="1" stop-color="#d4dadd"/></linearGradient>
+ <linearGradient id="mugG" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#9dbcdb"/><stop offset=".35" stop-color="#e9f2fb"/><stop offset="1" stop-color="#86a8cc"/></linearGradient>
+ <radialGradient id="coffeeG" cx="50%" cy="40%" r="70%"><stop offset="0" stop-color="#7a5236"/><stop offset="1" stop-color="#3d2514"/></radialGradient>
+ <radialGradient id="ballShade" cx="35%" cy="30%" r="85%"><stop offset="0" stop-color="#fff" stop-opacity=".28"/><stop offset=".45" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".55"/></radialGradient>
+ <clipPath id="ballClip"><circle cx="240" cy="190" r="96"/></clipPath>
+ <g id="bg"><rect width="480" height="360" fill="#dfe6e3"/><rect width="480" height="130" fill="#c8d6d3" filter="url(#wallb)"/><rect y="118" width="480" height="242" fill="url(#deskG)"/><rect y="118" width="480" height="242" filter="url(#grain)" opacity=".6"/><rect y="112" width="480" height="14" fill="#fff" opacity=".2" filter="url(#blur3)"/></g>
+ <symbol id="ph-buku" viewBox="0 0 480 360"><use href="#bg"/>
+  <ellipse cx="248" cy="292" rx="150" ry="22" fill="#2b1b0b" opacity=".45" filter="url(#blur6)"/>
+  <g transform="rotate(-7 240 200)">
+   <rect x="128" y="266" width="224" height="16" rx="3" fill="#eadfc5"/><path d="M134 271h212M134 275h212M134 279h212" stroke="#c4b896" stroke-width="1.2"/>
+   <rect x="124" y="112" width="232" height="164" rx="7" fill="url(#bookG)"/>
+   <rect x="124" y="112" width="28" height="164" rx="7" fill="#1f4f42" opacity=".5"/><rect x="152" y="112" width="3" height="164" fill="#0b2b24" opacity=".3"/>
+   <rect x="180" y="150" width="148" height="62" rx="6" fill="#f2e9cf" opacity=".93"/>
+   <rect x="194" y="166" width="108" height="9" rx="4" fill="#3d7d6c"/><rect x="194" y="186" width="74" height="7" rx="3" fill="#6aa392"/>
+   <rect x="124" y="112" width="232" height="164" rx="7" fill="url(#sheen)"/>
+  </g><use href="#vig"/></symbol>
+ <symbol id="ph-pensel" viewBox="0 0 480 360"><use href="#bg"/>
+  <g transform="rotate(-24 240 190)">
+   <rect x="70" y="214" width="330" height="18" rx="9" fill="#2b1b0b" opacity=".45" filter="url(#blur6)"/>
+   <rect x="96" y="172" width="236" height="36" fill="#f2c230"/><rect x="96" y="172" width="236" height="12" fill="#f9de74"/><rect x="96" y="196" width="236" height="12" fill="#c8921a"/>
+   <path d="M96 172L52 190L96 208Z" fill="#e8c999"/><path d="M96 172L70 183L70 197L96 208Z" fill="#d9b480" opacity=".5"/><path d="M63 186L52 190L63 194Z" fill="#33363a"/>
+   <rect x="332" y="169" width="30" height="42" fill="url(#metalG)"/><path d="M340 169v42M348 169v42M356 169v42" stroke="#7b868c" stroke-width="1.5" opacity=".7"/>
+   <rect x="362" y="172" width="28" height="36" rx="9" fill="#e98f87"/>
+  </g><use href="#vig"/></symbol>
+ <symbol id="ph-cawan" viewBox="0 0 480 360"><use href="#bg"/>
+  <ellipse cx="236" cy="298" rx="112" ry="18" fill="#2b1b0b" opacity=".5" filter="url(#blur6)"/>
+  <path d="M300 172q58-8 48 42q-8 36-52 30" fill="none" stroke="#93b4d4" stroke-width="16" stroke-linecap="round"/>
+  <path d="M300 170q54-8 44 38" fill="none" stroke="#e1edf8" stroke-width="4" stroke-linecap="round" opacity=".7"/>
+  <path d="M148 150L164 262Q236 300 308 262L324 150Z" fill="url(#mugG)"/>
+  <ellipse cx="236" cy="150" rx="88" ry="24" fill="#eef5fb"/><ellipse cx="236" cy="153" rx="76" ry="18" fill="url(#coffeeG)"/>
+  <path d="M178 192Q174 236 188 262" stroke="#fff" stroke-width="6" opacity=".55" fill="none" stroke-linecap="round"/>
+  <use href="#vig"/></symbol>
+ <symbol id="ph-pemadam" viewBox="0 0 480 360"><use href="#bg"/>
+  <ellipse cx="240" cy="276" rx="150" ry="20" fill="#2b1b0b" opacity=".45" filter="url(#blur6)"/>
+  <polygon points="118,178 176,214 176,262 118,226" fill="#d38479"/>
+  <polygon points="176,214 350,192 350,238 176,262" fill="#ec9f94"/>
+  <polygon points="118,178 292,160 350,192 176,214" fill="#f7d3cb"/>
+  <polygon points="178.9,171.7 239.8,165.4 297.8,198.6 236.9,206.3" fill="#5b8bd0"/>
+  <polygon points="236.9,206.3 297.8,198.6 297.8,245.2 236.9,253.6" fill="#3b69ad"/>
+  <path d="M178.9 171.7L236.9 206.3L236.9 253.6M239.8 165.4L297.8 198.6L297.8 245.2" stroke="#fff" stroke-width="1.5" fill="none" opacity=".6"/>
+  <use href="#vig"/></symbol>
+ <symbol id="ph-bola" viewBox="0 0 480 360"><use href="#bg"/>
+  <ellipse cx="244" cy="292" rx="100" ry="15" fill="#2b1b0b" opacity=".5" filter="url(#blur6)"/>
+  <circle cx="240" cy="190" r="96" fill="#d94a37"/>
+  <g clip-path="url(#ballClip)"><ellipse cx="240" cy="190" rx="140" ry="30" transform="rotate(-24 240 190)" fill="#f6efe4"/></g>
+  <circle cx="240" cy="190" r="96" fill="url(#ballShade)"/>
+  <ellipse cx="208" cy="142" rx="22" ry="11" fill="#fff" opacity=".6" filter="url(#blur3)" transform="rotate(-30 208 142)"/>
+  <use href="#vig"/></symbol>
+</defs>
+</svg>
+
+<a class="skip" href="#main" id="skip">Langkau ke kandungan</a>
+
+<header class="top">
+ <div class="top-in">
+  <button class="brand" data-act="home" id="brand">
+   <span class="mark" aria-hidden="true"><svg width="50" height="44" viewBox="285 55 430 380"><use href="#logo-art"/></svg></span>
+   <span><b>Satu Langkah</b><small id="tagline"></small></span>
+  </button>
+  <div class="top-r">
+   <button class="langsw" id="langsw" role="switch" aria-checked="false" data-act="lang"><span class="lg l-bm">BM</span><span class="track" aria-hidden="true"><span class="thumb"></span></span><span class="lg l-en">ENG</span></button>
+   <nav id="portals"><ul>
+    <li><button class="navbtn" data-portal="student" id="p-stu"></button></li>
+    <li><button class="navbtn" data-portal="teacher" id="p-tea"></button></li>
+   </ul></nav>
+   <button class="navbtn" data-act="settings" id="n-set"></button>
+  </div>
+ </div>
+</header>
+
+<main id="main" tabindex="-1"></main>
+
+<footer id="controls" hidden aria-label="Kawalan murid">
+ <div class="ctl-wrap">
+  <div class="ctl-in">
+   <button class="btn c-ulang" data-ctl="ulang"></button>
+   <button class="btn c-bantu" data-ctl="bantu"></button>
+   <button class="btn c-rehat" data-ctl="rehat"></button>
+   <button class="btn c-henti" data-ctl="henti"></button>
+  </div>
+  <div class="ctl-note" id="ctl-note"></div>
+ </div>
+</footer>
+<input type="file" id="file-in" accept="image/*" hidden>
+<div id="live" class="skip" style="left:-999px" aria-live="polite" role="status"></div>
+<div id="modal-root"></div>
+
+<script>
+"use strict";
+const T={
+ms:{
+ tagline:'Belajar satu langkah pada satu masa',skip:'Langkau ke kandungan',
+ portal_s:'Murid',portal_t:'Portal Guru',demo:'Demo',nav_portals:'Portal',nav_teacher:'Menu guru',tab_setup:'Sediakan',tab_summary:'Ringkasan',nav_set:'Tetapan',langlabel:'Bahasa: BM atau ENG',
+ ulang:'Ulang',bantu:'Bantu',rehat:'Rehat',henti:'Henti',ctl_note:'Tarik nafas dalam-dalam.',
+ proto_note:'Prototaip demo: padanan foto disimulasikan. Ini alat sokongan pembelajaran, bukan terapi atau diagnosis.',
+ su_h:'Sediakan sesi pembelajaran',su_sub:'Guru memilih tajuk, sasaran dan perkataan. Senarai perkataan ialah senarai tertutup.',
+ f_title:'Tajuk pelajaran',f_title_h:'Contoh: Objek harian',f_subject:'Mata pelajaran',f_standard:'Standard',f_standard_h:'Percubaan awal: Standard 1–3. Standard 4–6 dirancang kemudian.',
+ f_goal:'Sasaran pembelajaran',f_goal_h:'Pada akhir aktiviti, murid akan berlatih memadankan foto objek dengan perkataan bertulis.',
+ f_code:'Kod murid',f_code_h:'Gunakan kod pendek (contoh: Murid 01), bukan nama penuh.',f_words:'Perkataan yang diluluskan guru (pilih 3 hingga 8)',
+ pm_h:'Foto objek (pilihan)',pm_p:'Foto contoh disediakan. Muat naik foto sebenar objek di kelas anda untuk menggantikannya. Foto kekal dalam pelayar ini sahaja.',pm_up:'Muat naik foto',pm_reset:'Guna foto contoh',
+ submit:'Simpan dan mulakan sesi murid',
+ priv:'Privasi: dalam prototaip ini foto hanya berada dalam pelayar anda. Foto tidak dihantar ke mana-mana. Sebelum menggunakan perkhidmatan pengecaman sebenar, penyimpanan foto mesti disahkan dahulu.',
+ ok:'Nampak baik',
+ e_title_empty:'Tajuk diperlukan. Taip tajuk pendek, contohnya "Objek harian".',e_title_short:'Tajuk terlalu pendek. Gunakan sekurang-kurangnya 3 huruf.',e_title_long:'Tajuk terlalu panjang. Gunakan maksimum 40 aksara.',
+ e_goal_empty:'Sasaran diperlukan. Tulis satu ayat tentang apa yang murid akan berlatih.',e_goal_short:n=>'Sasaran terlalu pendek ('+n+' aksara). Tulis sekurang-kurangnya 15 aksara.',
+ e_code_empty:'Kod murid diperlukan. Contoh: Murid 01.',e_code_long:'Kod terlalu panjang. Gunakan kod pendek (maksimum 12 aksara), bukan nama penuh.',
+ e_words_min:n=>'Pilih sekurang-kurangnya 3 perkataan (sekarang '+n+').',e_words_max:'Pilih maksimum 8 perkataan.',
+ words_count:n=>n+' perkataan dipilih',errsum:'Sila betulkan perkara berikut:',
+ p_start_h:'Hai! Kita belajar tentang objek.',p_start_sub:'Ikut langkah ini dengan tenang. Ambil masa anda.',
+ mission:'Misi hari ini',mission_h:'Cari satu objek',mission_p:'Lihat sekeliling dan pilih satu objek. Guru akan bantu jika anda perlukan.',start:'Mula',stop_any:'Boleh berhenti bila-bila masa.',
+ now:'Sekarang',next:'Seterusnya',done:'Siap',steps_aria:'Langkah',
+ ph_h:'Ambil gambar satu objek',ph_sub:'Pilih foto contoh, guna kamera atau pilih foto dari peranti. Anda boleh minta bantuan.',
+ ph_empty:'Belum ada gambar. Pilih foto contoh atau buka kamera.',samples:'Foto contoh',cam_open:'Guna kamera',cam_close:'Tutup kamera',up_btn:'Pilih foto dari peranti',take:'Ambil gambar',
+ take_h:'Pilih foto atau buka kamera dahulu.',cam_err:'Kamera tidak dapat dibuka. Benarkan akses kamera dalam tetapan pelayar, atau pilih foto contoh.',
+ sim:'Padanan ini disimulasikan dalam prototaip.',blurry:'Foto kabur',photo_alt:'Foto objek anda',photo_sample:l=>'Foto contoh: '+l.toLowerCase(),
+ c_h:w=>'Adakah ini '+w.toLowerCase()+'?',c_sub:'Saya padankan gambar dengan perkataan pilihan guru.',maybe:'Mungkin',hear:'Dengar perkataan',sure_q:'Betul? Anda yang tentukan.',yes:'Ya, ini',unsure:'Saya tak pasti',ai_unsure:'AI tidak pasti. Pilih daripada senarai guru.',
+ u_h:'Saya belum pasti.',u_sub:'Pilih perkataan yang paling sesuai. Tiada jawapan diteka.',u_side_h:'Gambar tidak sepadan?',u_side_p:'Pilih objek lain atau minta bantuan guru.',retake:'Ambil gambar lain',
+ pr_h:'Dengar dan pilih perkataan',pr_sub:'Satu aktiviti pendek. Anda boleh ulang seberapa banyak kali.',pr_q:'Pilih kad perkataan yang sama.',pr_try:'Hampir. Cuba kad lain atau tekan Bantu. Tiada markah.',hintlbl:'Petunjuk',playing:w=>'Memainkan: '+w,word_is:w=>'Perkataan: '+w,
+ praise:['Bagus!','Hebat!','Syabas!','Pandai!'],rw_sub:'Anda memilih perkataan yang betul.',rw_more:'Cari objek lain',rw_finish:'Selesai',
+ e_h:'Sesi tamat.',e_sub:'Terima kasih. Anda boleh rehat sekarang. Guru boleh lihat ringkasan.',e_stopped:'Anda memilih untuk berhenti. Itu tidak mengapa.',e_new:'Mula sesi baharu',
+ sm_h:'Ringkasan sesi',sm_sub:'Maklumat untuk guru menyesuaikan aktiviti seterusnya.',sm_none:'Belum ada sesi murid. Mulakan sesi murid dahulu.',sm_disc:'Paparan ini merekod sokongan. Ia bukan diagnosis atau ranking.',
+ sm_goal:'Sasaran pembelajaran',sm_words:'Perkataan dicuba',sm_supports:'Sokongan digunakan',sm_supp_note:'Menggunakan sokongan ialah pilihan biasa. Ia tidak dinilai atau diberi markah.',
+ sm_via_match:'disahkan oleh murid',sm_via_pick:'dipilih daripada senarai guru',sm_done:'aktiviti dilengkapkan',sm_notdone:'aktiviti tidak dilengkapkan',sm_stopped:'Murid memilih untuk berhenti.',
+ sm_notes:'Nota pemerhatian guru',sm_notes_h:'Pilihan. Contoh: perkataan mana perlu diulang.',sm_dl:'Muat turun ringkasan (.txt)',sm_back:'Kembali ke Sediakan',sm_pupil_code:'Murid',sm_lesson:'Pelajaran',
+ h_start:'Tekan Mula bila anda sedia. Anda boleh tekan Henti bila-bila masa.',h_photo:'Pilih satu foto contoh, atau buka kamera dan letakkan satu objek di dalam bingkai. Kemudian tekan Ambil gambar.',
+ h_confirm:'Tekan Dengar perkataan untuk mendengar. Jika betul, tekan Ya, ini. Jika tidak pasti, tekan Saya tak pasti.',h_choose:'Pilih satu kad. Anda boleh minta guru membantu.',
+ h_practice:'Tekan Dengar perkataan. Kemudian pilih kad perkataan yang sama. Anda boleh tunjuk petunjuk.',h_reward:'Anda boleh mencari objek lain atau menekan Selesai.',
+ help_t:'Bantuan',help_teacher:'Saya perlukan guru',help_teacher_ok:'Guru akan dipanggil. Tunggu dengan tenang atau tekan Rehat.',hint_show:'Tunjuk petunjuk',close:'Tutup',
+ br_t:'Rehat',br_p:'Ambil masa anda. Tekan Sambung bila anda sedia.',resume:'Sambung',
+ st_t:'Henti sesi?',st_p:'Anda boleh berhenti sekarang. Guru akan nampak bahawa anda memilih berhenti. Itu tidak mengapa.',st_yes:'Ya, henti',st_no:'Teruskan',
+ set_t:'Tetapan',set_size:'Saiz teks',set_theme:'Tema warna',set_sound:'Suara perkataan',set_motion:'Kurangkan gerakan',
+ theme_auto:'Ikut peranti',theme_light:'Cerah',theme_dark:'Gelap (tenang)',size_n:'Biasa',size_l:'Besar',size_xl:'Sangat besar'
+},
+en:{
+ tagline:'Learn one step at a time',skip:'Skip to content',
+ portal_s:'Student',portal_t:'Teacher Portal',demo:'Demo',nav_portals:'Portal',nav_teacher:'Teacher menu',tab_setup:'Set up',tab_summary:'Summary',nav_set:'Settings',langlabel:'Language: BM or ENG',
+ ulang:'Repeat',bantu:'Help',rehat:'Break',henti:'Stop',ctl_note:'Take a deep breath.',
+ proto_note:'Demo prototype: photo matching is simulated. This is a learning support tool, not therapy or diagnosis.',
+ su_h:'Set up a learning session',su_sub:'The teacher chooses the title, goal and words. The word list is closed.',
+ f_title:'Lesson title',f_title_h:'Example: Everyday objects',f_subject:'Subject',f_standard:'Standard',f_standard_h:'First pilot: Standards 1–3. Standards 4–6 are planned later.',
+ f_goal:'Learning goal',f_goal_h:'By the end of the activity, the pupil will practise matching an object photo to its written word.',
+ f_code:'Pupil code',f_code_h:'Use a short code (e.g. Murid 01), not a full name.',f_words:'Teacher-approved words (choose 3 to 8)',
+ pm_h:'Object photos (optional)',pm_p:'Sample photos are provided. Upload real photos of objects in your classroom to replace them. Photos stay in this browser only.',pm_up:'Upload photo',pm_reset:'Use sample photo',
+ submit:'Save and start pupil session',
+ priv:'Privacy: in this prototype photos stay in your browser. They are not sent anywhere. Photo retention must be verified before using a real recognition service.',
+ ok:'Looks good',
+ e_title_empty:'A title is needed. Type a short title, for example "Everyday objects".',e_title_short:'The title is too short. Use at least 3 letters.',e_title_long:'The title is too long. Use 40 characters or fewer.',
+ e_goal_empty:'A goal is needed. Write one sentence about what the pupil will practise.',e_goal_short:n=>'The goal is too short ('+n+' characters). Write at least 15 characters.',
+ e_code_empty:'A pupil code is needed. Example: Murid 01.',e_code_long:'The code is too long. Use a short code (12 characters or fewer), not a full name.',
+ e_words_min:n=>'Choose at least 3 words (currently '+n+').',e_words_max:'Choose 8 words or fewer.',
+ words_count:n=>n+' words selected',errsum:'Please fix the following:',
+ p_start_h:'Hi! Let us learn about objects.',p_start_sub:'Follow these steps calmly. Take your time.',
+ mission:'Today’s mission',mission_h:'Find one object',mission_p:'Look around and pick one object. Your teacher will help if you need it.',start:'Start',stop_any:'You can stop at any time.',
+ now:'Now',next:'Next',done:'Done',steps_aria:'Steps',
+ ph_h:'Take a photo of one object',ph_sub:'Choose a sample photo, use the camera, or pick a photo from your device. You can ask for help.',
+ ph_empty:'No photo yet. Choose a sample photo or open the camera.',samples:'Sample photos',cam_open:'Use camera',cam_close:'Close camera',up_btn:'Pick photo from device',take:'Take photo',
+ take_h:'Choose a photo or open the camera first.',cam_err:'The camera could not be opened. Allow camera access in your browser settings, or choose a sample photo.',
+ sim:'Matching is simulated in this prototype.',blurry:'Blurry photo',photo_alt:'Your photo of an object',photo_sample:l=>'Sample photo: '+l.toLowerCase(),
+ c_h:w=>'Is this a '+w.toLowerCase()+'?',c_sub:'I match the photo to the words your teacher chose.',maybe:'Maybe',hear:'Hear the word',sure_q:'Is that right? You decide.',yes:'Yes, this one',unsure:'I am not sure',ai_unsure:'The AI is not sure. Choose from the teacher’s list.',
+ u_h:'I am not sure yet.',u_sub:'Choose the word that fits best. Nothing is guessed for you.',u_side_h:'Photo does not match?',u_side_p:'Choose another object or ask your teacher for help.',retake:'Take another photo',
+ pr_h:'Listen and choose the word',pr_sub:'One short activity. You can repeat as many times as you like.',pr_q:'Choose the word card that matches.',pr_try:'Nearly. Try another card or press Help. There is no score.',hintlbl:'Hint',playing:w=>'Playing: '+w,word_is:w=>'Word: '+w,
+ praise:['Great job!','Well done!','Nicely done!','Super!'],rw_sub:'You chose the right word.',rw_more:'Find another object',rw_finish:'Finish',
+ e_h:'Session over.',e_sub:'Thank you. You can rest now. Your teacher can see the summary.',e_stopped:'You chose to stop. That is okay.',e_new:'Start a new session',
+ sm_h:'Session summary',sm_sub:'Information to help the teacher adapt the next activity.',sm_none:'No pupil session yet. Start a pupil session first.',sm_disc:'This view records supports. It is not a diagnosis or a ranking.',
+ sm_goal:'Learning goal',sm_words:'Words attempted',sm_supports:'Supports used',sm_supp_note:'Using supports is a normal choice. It is not rated or scored.',
+ sm_via_match:'confirmed by the pupil',sm_via_pick:'chosen from the teacher’s list',sm_done:'activity completed',sm_notdone:'activity not completed',sm_stopped:'The pupil chose to stop.',
+ sm_notes:'Teacher observation notes',sm_notes_h:'Optional. Example: which words need repeating.',sm_dl:'Download summary (.txt)',sm_back:'Back to Set up',sm_pupil_code:'Pupil',sm_lesson:'Lesson',
+ h_start:'Press Start when you are ready. You can press Stop at any time.',h_photo:'Choose one sample photo, or open the camera and put one object in the frame. Then press Take photo.',
+ h_confirm:'Press Hear the word to listen. If it is right, press Yes, this one. If unsure, press I am not sure.',h_choose:'Choose one card. You can ask your teacher to help.',
+ h_practice:'Press Hear the word. Then choose the matching word card. You can show a hint.',h_reward:'You can find another object or press Finish.',
+ help_t:'Help',help_teacher:'I need my teacher',help_teacher_ok:'Your teacher will be called. Wait calmly or press Break.',hint_show:'Show hint',close:'Close',
+ br_t:'Break',br_p:'Take your time. Press Resume when you are ready.',resume:'Resume',
+ st_t:'Stop the session?',st_p:'You can stop now. Your teacher will see that you chose to stop. That is okay.',st_yes:'Yes, stop',st_no:'Keep going',
+ set_t:'Settings',set_size:'Text size',set_theme:'Colour theme',set_sound:'Word audio',set_motion:'Reduce motion',
+ theme_auto:'Follow device',theme_light:'Light',theme_dark:'Dark (calm)',size_n:'Normal',size_l:'Large',size_xl:'Extra large'
+}};
+const WORDS=[{k:'buku',w:'Buku'},{k:'pensel',w:'Pensel'},{k:'cawan',w:'Cawan'},{k:'pemadam',w:'Pemadam'},{k:'bola',w:'Bola'}];
+const wordOf=k=>(WORDS.find(x=>x.k===k)||{w:k}).w;
+
+/* ---------- State ---------- */
+const S={
+ lang:'ms',portal:'student',pscreen:'p-start',tab:'setup',
+ lesson:{title:'Objek harian',subject:'Bahasa Melayu',standard:'2',goal:'Memadankan foto objek dengan perkataan bertulis yang dipelajari.',code:'Murid 01',words:['buku','pensel','cawan']},
+ touched:{},photo:null,sample:null,camOn:false,camErr:false,stream:null,
+ round:null,rounds:[],supports:{ulang:0,bantu:0,rehat:0,henti:0},stopped:false,ended:false,sessionStarted:false,
+ hint:false,wrong:false,notes:'',custom:{},upTarget:null,
+ settings:{size:'100',sound:true,theme:'auto',motion:false}
+};
+try{const s=JSON.parse(localStorage.getItem('sl-settings')||'null');if(s){Object.assign(S.settings,s.settings||{});if(s.lang)S.lang=s.lang;}}catch(e){}
+try{const p=JSON.parse(localStorage.getItem('sl-photos')||'null');if(p&&typeof p==='object')S.custom=p;}catch(e){}
+const saveSettings=()=>{try{localStorage.setItem('sl-settings',JSON.stringify({settings:S.settings,lang:S.lang}));}catch(e){}};
+const savePhotos=()=>{try{localStorage.setItem('sl-photos',JSON.stringify(S.custom));}catch(e){}};
+const t=(k,...a)=>{const v=(T[S.lang][k]!==undefined?T[S.lang][k]:T.ms[k]);return typeof v==='function'?v(...a):(v===undefined?k:v)};
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const $=(s,r=document)=>r.querySelector(s);
+const cur=()=>S.portal==='student'?S.pscreen:S.tab;
+
+/* ---------- Photos ---------- */
+const sampleKey=k=>k==='kabur'?'cawan':k;
+function photoFor(key,alt){
+ const c=S.custom[key];
+ if(c)return `<img src="${c}" width="480" height="360" alt="${esc(alt||'')}">`;
+ return `<svg viewBox="0 0 480 360" preserveAspectRatio="xMidYMid slice" ${alt?`role="img" aria-label="${esc(alt)}"`:'aria-hidden="true"'} focusable="false"><use href="#ph-${key}"/></svg>`;
+}
+const thumb=(k,cls='')=>`<span class="th ${cls}">${photoFor(k)}</span>`;
+function photoHTML(){
+ if(S.camOn)return `<div class="frame"><video id="cam" width="480" height="360" autoplay playsinline muted aria-label="${t('photo_alt')}"></video></div>`;
+ const p=S.photo;
+ if(p&&p.type==='camera')return `<div class="frame"><img src="${p.url}" width="480" height="360" alt="${t('photo_alt')}"></div>`;
+ const k=p?p.key:S.sample;
+ if(k)return `<div class="frame ${k==='kabur'?'blur':''}">${photoFor(sampleKey(k),t('photo_sample',k==='kabur'?t('blurry'):wordOf(k)))}</div>`;
+ return `<div class="frame"><div class="empty">${t('ph_empty')}</div></div>`;
+}
+function readImage(file,max,cb){
+ const fr=new FileReader();
+ fr.onload=()=>{const im=new Image();im.onload=()=>{
+   const sc=Math.min(1,max/Math.max(im.width,im.height));const c=document.createElement('canvas');
+   c.width=Math.round(im.width*sc);c.height=Math.round(im.height*sc);c.getContext('2d').drawImage(im,0,0,c.width,c.height);
+   cb(c.toDataURL('image/jpeg',.8));};im.src=fr.result;};
+ fr.readAsDataURL(file);
+}
+
+/* ---------- Helpers ---------- */
+function announce(m){const l=$('#live');l.textContent='';setTimeout(()=>l.textContent=m,30)}
+function speechOK(){return S.settings.sound&&'speechSynthesis' in window}
+function setStatus(m){const el=$('#audio-status');if(el)el.textContent=m}
+function speak(text){
+ setStatus(speechOK()?t('playing',text):t('word_is',text));
+ if(!speechOK())return;
+ try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='ms-MY';u.rate=.85;speechSynthesis.speak(u);}catch(e){}
+}
+function stopCamera(){if(S.stream){S.stream.getTracks().forEach(tr=>tr.stop());S.stream=null}S.camOn=false}
+function strip(phase){
+ const L=[t('now'),t('next'),t('done')];
+ return `<ol class="steps" aria-label="${t('steps_aria')}">${L.map((x,i)=>`<li class="${i<phase?'past':''}" ${i===phase?'aria-current="step"':''}>${x}</li>`).join('')}</ol>`;
+}
+const mascot=(cls='')=>`<svg class="mascot ${cls}" viewBox="0 0 300 260" aria-hidden="true" focusable="false"><use href="#mascot-art"/></svg>`;
+function matchResult(){ // SIMULATED matching
+ const p=S.photo;if(!p)return null;
+ if(p.type==='sample'&&p.key!=='kabur'&&S.lesson.words.includes(p.key))return p.key;
+ return null;
+}
+function newRound(word,via){const r={word,via,completed:false};S.round=r;S.rounds.push(r);S.sessionStarted=true}
+function resetPhoto(){stopCamera();S.photo=null;S.sample=null;S.camErr=false}
+function startSession(){S.rounds=[];S.supports={ulang:0,bantu:0,rehat:0,henti:0};S.stopped=false;S.ended=false;S.round=null;S.sessionStarted=false;resetPhoto();S.hint=S.wrong=false}
+
+/* ---------- Screens ---------- */
+const SC={};
+function pupilFrame(phase,h,sub,body){return `<section aria-labelledby="h1"><h1 id="h1" tabindex="-1">${h}</h1><p class="sub">${sub}</p>${strip(phase)}${body}</section>`}
+
+function teacherTabs(){
+ const b=(k,l)=>`<button class="navbtn" data-tab="${k}" ${S.tab===k?'aria-current="page"':''}>${l}</button>`;
+ return `<nav class="tabs" aria-label="${t('nav_teacher')}"><span class="badge">${t('demo')}</span>${b('setup',t('tab_setup'))}${b('summary',t('tab_summary'))}</nav>`;
+}
+
+SC.setup=()=>{const L=S.lesson;
+ const wopts=WORDS.map(x=>`<label class="wopt"><input type="checkbox" data-w="${x.k}" ${L.words.includes(x.k)?'checked':''}>${thumb(x.k,'sm')}<span>${x.w}</span></label>`).join('');
+ const pm=WORDS.map(x=>`<li class="pm">${thumb(x.k,'sm')}<strong>${x.w}</strong><span class="row"><button type="button" class="btn outline sm" data-tphoto="${x.k}">${t('pm_up')}</button>${S.custom[x.k]?`<button type="button" class="btn sm" data-treset="${x.k}">${t('pm_reset')}</button>`:''}</span></li>`).join('');
+ return `<section aria-labelledby="h1"><h1 id="h1" tabindex="-1">${t('su_h')}</h1><p class="sub">${t('su_sub')}</p>
+ <div id="errsum" class="errsum" role="alert" hidden></div>
+ <form id="setup-form" novalidate class="card">
+  <div class="field"><label for="f-title">${t('f_title')}</label><span class="hintt" id="h-title">${t('f_title_h')}</span>
+   <input type="text" id="f-title" data-f="title" value="${esc(L.title)}" aria-describedby="h-title m-title" autocomplete="off"><div class="msg" id="m-title" aria-live="polite"></div></div>
+  <div class="two" style="align-items:start">
+   <div class="field"><label for="f-subject">${t('f_subject')}</label><select id="f-subject" data-f="subject"><option>Bahasa Melayu</option></select></div>
+   <div class="field"><label for="f-standard">${t('f_standard')}</label><select id="f-standard" data-f="standard" aria-describedby="h-std">${[1,2,3].map(n=>`<option value="${n}" ${String(n)===L.standard?'selected':''}>Standard ${n}</option>`).join('')}</select><span class="hintt" id="h-std">${t('f_standard_h')}</span></div>
+  </div>
+  <div class="field"><label for="f-goal">${t('f_goal')}</label><span class="hintt" id="h-goal">${t('f_goal_h')}</span>
+   <textarea id="f-goal" data-f="goal" aria-describedby="h-goal m-goal">${esc(L.goal)}</textarea><div class="msg" id="m-goal" aria-live="polite"></div></div>
+  <div class="field"><label for="f-code">${t('f_code')}</label><span class="hintt" id="h-code">${t('f_code_h')}</span>
+   <input type="text" id="f-code" data-f="code" value="${esc(L.code)}" aria-describedby="h-code m-code" autocomplete="off"><div class="msg" id="m-code" aria-live="polite"></div></div>
+  <fieldset id="f-words" aria-describedby="m-words"><legend>${t('f_words')}</legend><div class="wopts">${wopts}</div><div class="msg" id="m-words" aria-live="polite"></div></fieldset>
+  <fieldset><legend>${t('pm_h')}</legend><p class="small" style="margin-top:0">${t('pm_p')}</p><ul class="pmlist">${pm}</ul></fieldset>
+  <p class="note">${t('priv')}</p>
+  <button type="submit" class="btn primary big">${t('submit')}</button>
+ </form></section>`};
+
+SC.summary=()=>{const L=S.lesson;
+ const sup=['ulang','bantu','rehat','henti'].map(k=>`<li><span class="dot ${S.supports[k]>0?'on':''}" aria-hidden="true">${S.supports[k]>0?'✓':''}</span><span>${t(k)}</span></li>`).join('');
+ const ws=S.rounds.map(r=>`<li style="margin-bottom:8px"><strong>${wordOf(r.word)}</strong> <span class="small">(${r.via==='match'?t('sm_via_match'):t('sm_via_pick')}; ${r.completed?t('sm_done'):t('sm_notdone')})</span></li>`).join('');
+ return `<section aria-labelledby="h1"><h1 id="h1" tabindex="-1">${t('sm_h')}</h1><p class="sub">${t('sm_sub')}</p>
+ <div class="note"><strong>${t('sm_pupil_code')}: ${esc(L.code)}</strong> · ${t('sm_lesson')}: ${esc(L.title)} (${esc(L.subject)}, Standard ${esc(L.standard)})<br><span class="small">${t('sm_disc')}</span></div>
+ ${S.sessionStarted||S.rounds.length?'':`<p class="msg err" role="status"><span aria-hidden="true">ℹ</span> ${t('sm_none')}</p>`}
+ <div class="two" style="align-items:start">
+  <div class="card"><p class="small" style="font-weight:700">${t('sm_goal')}</p><h2>${esc(L.goal)}</h2>
+   <p class="small" style="font-weight:700;margin-top:16px">${t('sm_words')}</p>${ws?`<ul class="list">${ws}</ul>`:'<p class="small">–</p>'}
+   ${S.stopped?`<p class="small">${t('sm_stopped')}</p>`:''}</div>
+  <div class="card"><p class="small" style="font-weight:700">${t('sm_supports')}</p><ul class="chk">${sup}</ul><p class="small">${t('sm_supp_note')}</p>
+   <div class="field" style="margin-top:12px"><label for="f-notes">${t('sm_notes')}</label><span class="hintt" id="h-notes">${t('sm_notes_h')}</span><textarea id="f-notes" data-notes aria-describedby="h-notes">${esc(S.notes)}</textarea></div></div>
+ </div>
+ <div class="row" style="margin-top:22px"><button class="btn primary" data-act="download">${t('sm_dl')}</button><button class="btn outline" data-tab="setup">${t('sm_back')}</button></div></section>`};
+
+SC['p-start']=()=>pupilFrame(0,t('p_start_h'),t('p_start_sub'),`
+ <div class="card two">
+  <div class="frame">${photoFor('pensel',t('photo_sample','Pensel'))}</div>
+  <div><p class="small" style="font-weight:700;color:var(--primary);margin:0">${t('mission')}</p><h2 style="font-size:1.9rem;margin:4px 0 8px">${t('mission_h')}</h2><p class="sub" style="margin-bottom:22px">${t('mission_p')}</p>
+   <div class="row"><button class="btn primary big" data-act="begin">${t('start')}</button><span class="small">${t('stop_any')}</span></div></div>
+ </div><p class="small" style="margin-top:14px">${t('proto_note')}</p>`);
+
+SC['p-photo']=()=>{
+ const samples=['buku','pensel','pemadam','bola','cawan','kabur'].map(k=>`<button class="sbtn" data-sample="${k}" aria-pressed="${S.sample===k&&!S.camOn?'true':'false'}">${thumb(sampleKey(k),k==='kabur'?'blur':'')}<span>${k==='kabur'?t('blurry'):wordOf(k)}</span></button>`).join('');
+ const can=!!(S.sample||S.camOn);
+ return pupilFrame(0,t('ph_h'),t('ph_sub'),`
+ <div class="card two" style="align-items:start">
+  <div>${photoHTML()}</div>
+  <div>
+   <h2>${t('samples')}</h2><div class="samples" role="group" aria-label="${t('samples')}">${samples}</div>
+   <div class="row" style="margin-bottom:14px"><button class="btn outline" data-act="${S.camOn?'camclose':'camopen'}">${S.camOn?t('cam_close'):t('cam_open')}</button><button class="btn outline" data-act="upload">${t('up_btn')}</button></div>
+   ${S.camErr?`<div class="msg err" role="alert"><span aria-hidden="true">⚠</span> ${t('cam_err')}</div>`:''}
+   <button class="btn primary big" data-act="take" ${can?'':'disabled'} aria-describedby="take-h">${t('take')}</button>
+   <p class="small" id="take-h" style="min-height:1.5rem;margin:6px 0 0">${can?'':t('take_h')}</p>
+   <p class="small" style="margin:0">${t('sim')}</p>
+  </div></div>`)};
+
+SC['p-confirm']=()=>{const w=wordOf(S.round.word);
+ return pupilFrame(0,t('c_h',w),t('c_sub'),`
+ <div class="card two">
+  <div>${photoHTML()}</div>
+  <div class="center">
+   <div class="note" style="margin-bottom:16px"><span class="small" style="font-weight:700;text-transform:uppercase">${t('maybe')}</span><div style="font-size:2.2rem;font-weight:700;line-height:1.2">${w}</div></div>
+   <p style="margin:0 0 6px"><button class="btn outline big" data-act="hear">${t('hear')}</button></p><p class="status" id="audio-status"></p>
+   <p class="sub" style="margin-bottom:12px">${t('sure_q')}</p>
+   <div class="row" style="justify-content:center"><button class="btn primary big" data-act="yes">${t('yes')}</button><button class="btn outline big" data-act="notsure">${t('unsure')}</button></div>
+   <p class="small" style="margin:14px 0 0">${t('ai_unsure')} ${t('sim')}</p>
+  </div></div>`)};
+
+SC['p-choose']=()=>{
+ const cards=S.lesson.words.map(k=>`<button class="wcard" data-pick="${k}">${thumb(k)}<span>${wordOf(k)}</span></button>`).join('');
+ return pupilFrame(0,t('u_h'),t('u_sub'),`
+ <div class="card two" style="align-items:start">
+  <div>${photoHTML()}</div>
+  <div><div class="cards">${cards}</div>
+   <div class="note" style="margin:18px 0 0"><strong>${t('u_side_h')}</strong><br>${t('u_side_p')}<div class="row" style="margin-top:10px"><button class="btn outline sm" data-act="retake">${t('retake')}</button></div></div></div>
+ </div>`)};
+
+SC['p-practice']=()=>{const w=S.round.word;
+ const opts=[w,...S.lesson.words.filter(k=>k!==w).slice(0,2)].sort((a,b)=>a.localeCompare(b));
+ const cards=opts.map(k=>`<button class="wcard textonly ${S.hint&&k===w?'hint':''}" data-ans="${k}" ${S.hint&&k===w?'aria-describedby="hint-lbl"':''}>${wordOf(k)}${S.hint&&k===w?`<span class="lbl" id="hint-lbl">${t('hintlbl')}</span>`:''}</button>`).join('');
+ return pupilFrame(1,t('pr_h'),t('pr_sub'),`
+ <div class="card two">
+  <div>${photoHTML()}</div>
+  <div>
+   <p style="margin:0 0 6px"><button class="btn outline big" data-act="hear">${t('hear')}</button></p><p class="status" id="audio-status"></p>
+   <h2>${t('pr_q')}</h2><div class="cards" style="grid-template-columns:repeat(auto-fit,minmax(130px,1fr))">${cards}</div>
+   <p class="msg" aria-live="polite" style="min-height:2.4rem;margin-top:12px">${S.wrong?t('pr_try'):''}</p>
+  </div></div>`)};
+
+SC['p-reward']=()=>{
+ const n=Math.max(0,S.rounds.filter(r=>r.completed).length-1);const P=t('praise');
+ return `<section aria-labelledby="h1">${strip(2)}<div class="reward">${mascot()}<h1 id="h1" tabindex="-1">${P[n%P.length]}</h1><p class="sub">${t('rw_sub')}</p>
+  <div class="row" style="justify-content:center"><button class="btn primary big" data-act="more">${t('rw_more')}</button><button class="btn outline big" data-act="end">${t('rw_finish')}</button></div></div></section>`};
+
+SC['p-end']=()=>`<section aria-labelledby="h1">${strip(2)}<div class="reward">${mascot('s')}<h1 id="h1" tabindex="-1" style="font-size:2.4rem">${t('e_h')}</h1><p class="sub">${S.stopped?t('e_stopped'):t('e_sub')}</p>
+ <button class="btn primary big" data-act="newsession">${t('e_new')}</button></div></section>`;
+
+/* ---------- Render ---------- */
+function applySettings(){
+ const h=document.documentElement;
+ h.lang=S.lang==='ms'?'ms':'en';h.setAttribute('data-theme',S.settings.theme);
+ h.classList.toggle('size115',S.settings.size==='115');h.classList.toggle('size130',S.settings.size==='130');h.classList.toggle('reduce',!!S.settings.motion);
+ $('#tagline').textContent=t('tagline');$('#skip').textContent=t('skip');
+ $('#p-stu').textContent=t('portal_s');$('#p-tea').innerHTML=`${t('portal_t')} <span class="badge">${t('demo')}</span>`;
+ $('#portals').setAttribute('aria-label',t('nav_portals'));$('#n-set').textContent='⚙ '+t('nav_set');
+ const sw=$('#langsw');sw.setAttribute('aria-checked',S.lang==='en'?'true':'false');sw.setAttribute('aria-label',t('langlabel'));
+ document.querySelectorAll('[data-ctl]').forEach(b=>b.textContent=t(b.dataset.ctl));$('#ctl-note').textContent=t('ctl_note');
+}
+function render(opts={}){
+ const sc=cur();if(sc!=='p-photo'&&S.camOn)stopCamera();
+ const main=$('#main');main.innerHTML=(S.portal==='teacher'?teacherTabs():'')+SC[sc]();
+ const isP=S.portal==='student';main.classList.toggle('has-ctl',isP);$('#controls').hidden=!isP;
+ document.querySelectorAll('[data-portal]').forEach(b=>b.dataset.portal===S.portal?b.setAttribute('aria-current','page'):b.removeAttribute('aria-current'));
+ if(sc==='p-photo'&&S.camOn&&S.stream){const v=$('#cam');if(v){v.srcObject=S.stream;v.play&&v.play().catch(()=>{})}}
+ if(sc==='setup')['title','goal','code','words'].forEach(n=>{if(S.touched[n])setMsg(n)});
+ if(!opts.keepFocus){const h=$('#h1');if(h)h.focus();window.scrollTo(0,0);announce((h&&h.textContent)||'')}
+ else if(opts.focusSel){const el=$(opts.focusSel);if(el)el.focus()}
+}
+function go(s,o){if(s.startsWith('p-')){S.portal='student';S.pscreen=s}else{S.portal='teacher';S.tab=s}render(o)}
+
+/* ---------- Validation (setup form) ---------- */
+function validate(n){const L=S.lesson;
+ if(n==='title'){const v=L.title.trim();if(!v)return t('e_title_empty');if(v.length<3)return t('e_title_short');if(v.length>40)return t('e_title_long')}
+ if(n==='goal'){const v=L.goal.trim();if(!v)return t('e_goal_empty');if(v.length<15)return t('e_goal_short',v.length)}
+ if(n==='code'){const v=L.code.trim();if(!v)return t('e_code_empty');if(v.length>12)return t('e_code_long')}
+ if(n==='words'){const c=L.words.length;if(c<3)return t('e_words_min',c);if(c>8)return t('e_words_max')}
+ return ''}
+function setMsg(n){const el=$('#m-'+n);if(!el)return;const err=validate(n);const inp=$('#f-'+n);
+ if(inp){if(err)inp.setAttribute('aria-invalid','true');else inp.removeAttribute('aria-invalid')}
+ el.className='msg '+(err?'err':'ok');
+ el.innerHTML=err?`<span aria-hidden="true">⚠</span> ${err}`:`<span aria-hidden="true">✓</span> ${n==='words'?t('words_count',S.lesson.words.length):t('ok')}`;
+ return err}
+const deb={};
+function debounced(n){clearTimeout(deb[n]);deb[n]=setTimeout(()=>{S.touched[n]=true;setMsg(n)},500)}
+
+/* ---------- Modal with focus trap ---------- */
+let lastFocus=null;
+function openModal({title,body,actions,calm}){
+ lastFocus=document.activeElement;const root=$('#modal-root');
+ root.innerHTML=`<div class="backdrop"><div class="modal ${calm?'calm':''}" role="dialog" aria-modal="true" aria-labelledby="m-t"><h2 id="m-t">${title}</h2><div>${body}</div><div class="row">${actions.map((a,i)=>`<button class="btn ${a.cls||'outline'}" data-mact="${i}">${a.label}</button>`).join('')}</div></div></div>`;
+ document.querySelectorAll('header.top,main,footer#controls').forEach(e=>e.inert=true);
+ root._actions=actions;const first=root.querySelector('select,input,button');(first||root.querySelector('.modal')).focus();
+ root.addEventListener('keydown',trap);
+}
+function closeModal(){const root=$('#modal-root');root.removeEventListener('keydown',trap);root.innerHTML='';root._actions=null;
+ document.querySelectorAll('header.top,main,footer#controls').forEach(e=>e.inert=false);
+ if(lastFocus&&document.contains(lastFocus))lastFocus.focus();}
+function trap(e){
+ if(e.key==='Escape'){e.preventDefault();closeModal();return}
+ if(e.key!=='Tab')return;
+ const f=[...$('#modal-root').querySelectorAll('button,select,input,textarea,[href]')].filter(x=>!x.disabled);
+ if(!f.length)return;const a=f[0],z=f[f.length-1];
+ if(e.shiftKey&&document.activeElement===a){e.preventDefault();z.focus()}else if(!e.shiftKey&&document.activeElement===z){e.preventDefault();a.focus()}
+}
+function settingsModal(){
+ const sel=(id,opts,val)=>`<select id="${id}">${opts.map(([v,l])=>`<option value="${v}" ${v===val?'selected':''}>${l}</option>`).join('')}</select>`;
+ openModal({title:t('set_t'),body:`
+  <div class="field"><label for="s-size">${t('set_size')}</label>${sel('s-size',[['100',t('size_n')],['115',t('size_l')],['130',t('size_xl')]],S.settings.size)}</div>
+  <div class="field"><label for="s-theme">${t('set_theme')}</label>${sel('s-theme',[['auto',t('theme_auto')],['light',t('theme_light')],['dark',t('theme_dark')]],S.settings.theme)}</div>
+  <label class="wopt" for="s-sound"><input type="checkbox" id="s-sound" ${S.settings.sound?'checked':''}>${t('set_sound')}</label>
+  <label class="wopt" for="s-motion" style="margin-top:10px"><input type="checkbox" id="s-motion" ${S.settings.motion?'checked':''}>${t('set_motion')}</label>`,
+  actions:[{label:t('close'),cls:'primary',fn:()=>closeModal()}]});
+}
+
+/* ---------- Pupil controls ---------- */
+const HELP={'p-start':'h_start','p-photo':'h_photo','p-confirm':'h_confirm','p-choose':'h_choose','p-practice':'h_practice','p-reward':'h_reward','p-end':'h_reward'};
+function control(c){
+ if(S.ended&&c!=='bantu')return;
+ if(c==='ulang'){S.supports.ulang++;
+  if(S.pscreen==='p-photo'){resetPhoto();render({keepFocus:true});return}
+  if(S.round&&(S.pscreen==='p-confirm'||S.pscreen==='p-practice'))speak(wordOf(S.round.word));else announce($('#h1')?$('#h1').textContent:'');
+  return}
+ if(c==='bantu'){S.supports.bantu++;
+  const extra=S.pscreen==='p-practice'?`<div class="row"><button class="btn outline" id="hintbtn">${t('hint_show')}</button></div>`:'';
+  openModal({title:t('help_t'),body:`<p>${t(HELP[S.pscreen]||'h_start')}</p>${extra}<p id="help-ok" class="msg ok" aria-live="polite"></p>`,
+   actions:[{label:t('help_teacher'),cls:'outline',fn:()=>{$('#help-ok').textContent=t('help_teacher_ok')}},{label:t('close'),cls:'primary',fn:()=>closeModal()}]});
+  const hb=$('#hintbtn');if(hb)hb.onclick=()=>{S.hint=true;closeModal();render({keepFocus:true})};
+  return}
+ if(c==='rehat'){S.supports.rehat++;try{speechSynthesis.cancel()}catch(e){}
+  openModal({title:t('br_t'),body:`<p style="font-size:1.2rem">${t('br_p')}</p>`,calm:true,actions:[{label:t('resume'),cls:'primary big',fn:()=>closeModal()}]});return}
+ if(c==='henti'){
+  openModal({title:t('st_t'),body:`<p>${t('st_p')}</p>`,actions:[{label:t('st_no'),cls:'primary',fn:()=>closeModal()},{label:t('st_yes'),cls:'outline',fn:()=>{closeModal();S.supports.henti++;S.stopped=true;S.ended=true;S.sessionStarted=true;stopCamera();go('p-end')}}]});return}
+}
+
+/* ---------- Events ---------- */
+document.addEventListener('click',e=>{
+ const m=e.target.closest('[data-mact]');
+ if(m){const root=$('#modal-root');const a=root._actions&&root._actions[+m.dataset.mact];if(a)a.fn();return}
+ const pt=e.target.closest('[data-portal]');
+ if(pt){S.portal=pt.dataset.portal;render();return}
+ const tb=e.target.closest('[data-tab]');
+ if(tb){S.portal='teacher';S.tab=tb.dataset.tab;render();return}
+ const c=e.target.closest('[data-ctl]');if(c){control(c.dataset.ctl);return}
+ const s=e.target.closest('[data-sample]');
+ if(s){S.sample=s.dataset.sample;stopCamera();S.photo=null;S.camErr=false;render({keepFocus:true,focusSel:`[data-sample="${S.sample}"]`});return}
+ const p=e.target.closest('[data-pick]');
+ if(p){newRound(p.dataset.pick,'pick');S.hint=S.wrong=false;go('p-practice');return}
+ const a=e.target.closest('[data-ans]');
+ if(a){if(a.dataset.ans===S.round.word){S.round.completed=true;S.wrong=false;S.hint=false;go('p-reward')}else{S.wrong=true;render({keepFocus:true,focusSel:`[data-ans="${a.dataset.ans}"]`})}return}
+ const tp=e.target.closest('[data-tphoto]');if(tp){S.upTarget=tp.dataset.tphoto;$('#file-in').click();return}
+ const tr=e.target.closest('[data-treset]');if(tr){delete S.custom[tr.dataset.treset];savePhotos();render({keepFocus:true,focusSel:`[data-tphoto="${tr.dataset.treset}"]`});return}
+ const j=e.target.closest('[data-jump]');if(j){e.preventDefault();const n=j.dataset.jump;(n==='words'?$('#f-words input'):$('#f-'+n)).focus();return}
+ const b=e.target.closest('[data-act]');if(!b)return;
+ switch(b.dataset.act){
+  case 'home':S.portal='student';render();break;
+  case 'lang':S.lang=S.lang==='ms'?'en':'ms';saveSettings();applySettings();render({keepFocus:true});announce(S.lang==='ms'?'Bahasa Melayu':'English');break;
+  case 'settings':settingsModal();break;
+  case 'begin':go('p-photo');break;
+  case 'camopen':openCamera();break;
+  case 'camclose':stopCamera();S.sample=null;render({keepFocus:true,focusSel:'[data-act="camopen"]'});break;
+  case 'upload':S.upTarget='student';$('#file-in').click();break;
+  case 'take':takePhoto();break;
+  case 'hear':speak(wordOf(S.round.word));break;
+  case 'yes':S.round.via='match';S.hint=S.wrong=false;go('p-practice');break;
+  case 'notsure':go('p-choose');break;
+  case 'retake':resetPhoto();go('p-photo');break;
+  case 'more':resetPhoto();S.round=null;S.hint=S.wrong=false;go('p-photo');break;
+  case 'end':S.ended=true;S.sessionStarted=true;go('p-end');break;
+  case 'newsession':startSession();go('p-start');break;
+  case 'download':downloadSummary();break;
+ }
+});
+document.addEventListener('submit',e=>{
+ if(e.target.id!=='setup-form')return;e.preventDefault();
+ const names=['title','goal','code','words'];names.forEach(n=>S.touched[n]=true);
+ const errs=names.map(n=>[n,setMsg(n)]).filter(x=>x[1]);const box=$('#errsum');
+ if(errs.length){box.hidden=false;box.innerHTML=`<strong><span aria-hidden="true">⚠</span> ${t('errsum')}</strong><ul class="list">${errs.map(([n,m])=>`<li><a href="#f-${n}" data-jump="${n}">${m}</a></li>`).join('')}</ul>`;
+  (errs[0][0]==='words'?$('#f-words input'):$('#f-'+errs[0][0])).focus();return}
+ box.hidden=true;startSession();go('p-start');
+});
+document.addEventListener('input',e=>{
+ const f=e.target.dataset&&e.target.dataset.f;
+ if(f){S.lesson[f]=e.target.value;if(['title','goal','code'].includes(f))debounced(f)}
+ if(e.target.dataset&&e.target.dataset.notes!==undefined)S.notes=e.target.value;
+});
+document.addEventListener('focusout',e=>{const f=e.target.dataset&&e.target.dataset.f;if(f&&['title','goal','code'].includes(f)){clearTimeout(deb[f]);S.touched[f]=true;setMsg(f)}});
+document.addEventListener('change',e=>{
+ const tg=e.target;
+ if(tg.dataset&&tg.dataset.w){const k=tg.dataset.w;const set=new Set(S.lesson.words);tg.checked?set.add(k):set.delete(k);S.lesson.words=WORDS.map(x=>x.k).filter(x=>set.has(x));S.touched.words=true;setMsg('words');return}
+ if(tg.dataset&&tg.dataset.f==='standard')S.lesson.standard=tg.value;
+ if(tg.id==='s-size'){S.settings.size=tg.value;saveSettings();applySettings()}
+ if(tg.id==='s-theme'){S.settings.theme=tg.value;saveSettings();applySettings()}
+ if(tg.id==='s-sound'){S.settings.sound=tg.checked;saveSettings()}
+ if(tg.id==='s-motion'){S.settings.motion=tg.checked;saveSettings();applySettings()}
+});
+$('#file-in').addEventListener('change',e=>{
+ const fin=e.target,f=fin.files&&fin.files[0];fin.value='';if(!f)return;
+ readImage(f,640,url=>{
+  if(S.upTarget==='student'){stopCamera();S.sample=null;S.photo={type:'camera',url};S.camErr=false;go('p-choose')}
+  else{S.custom[S.upTarget]=url;savePhotos();render({keepFocus:true,focusSel:`[data-tphoto="${S.upTarget}"]`})}
+ });
+});
+
+/* ---------- Camera ---------- */
+async function openCamera(){
+ try{
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)throw new Error('nocam');
+  S.stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false});
+  S.camOn=true;S.camErr=false;S.sample=null;S.photo=null;render({keepFocus:true,focusSel:'[data-act="camclose"]'});
+ }catch(err){S.camOn=false;S.camErr=true;render({keepFocus:true,focusSel:'[data-act="camopen"]'})}
+}
+function takePhoto(){
+ if(S.camOn){
+  const v=$('#cam');const c=document.createElement('canvas');c.width=v.videoWidth||480;c.height=v.videoHeight||360;
+  c.getContext('2d').drawImage(v,0,0,c.width,c.height);S.photo={type:'camera',url:c.toDataURL('image/jpeg',.8)};stopCamera();S.sample=null;
+ }else if(S.sample){S.photo={type:'sample',key:S.sample}}else return;
+ const key=matchResult(); // SIMULATED matching
+ if(key){newRound(key,'match');S.hint=S.wrong=false;go('p-confirm')}else go('p-choose');
+}
+
+/* ---------- Download summary ---------- */
+function downloadSummary(){
+ const L=S.lesson;
+ const lines=[`Satu Langkah – ${t('sm_h')}`,'',`${t('sm_pupil_code')}: ${L.code}`,`${t('sm_lesson')}: ${L.title} (${L.subject}, Standard ${L.standard})`,`${t('sm_goal')}: ${L.goal}`,'',`${t('sm_words')}:`,
+  ...S.rounds.map(r=>`- ${wordOf(r.word)} (${r.via==='match'?t('sm_via_match'):t('sm_via_pick')}; ${r.completed?t('sm_done'):t('sm_notdone')})`),'',`${t('sm_supports')}:`,
+  ...['ulang','bantu','rehat','henti'].map(k=>`- ${t(k)}: ${S.supports[k]>0?'✓':'–'}`),'',S.stopped?t('sm_stopped'):'',`${t('sm_notes')}: ${S.notes||'–'}`,'',t('sm_disc'),'(Demo prototype: photo matching simulated.)'];
+ const blob=new Blob([lines.join('\n')],{type:'text/plain;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='satu-langkah-ringkasan.txt';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+
+applySettings();render({keepFocus:true});
+</script>
+</body>
+</html>
